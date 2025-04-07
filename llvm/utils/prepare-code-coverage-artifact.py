@@ -69,7 +69,6 @@ def prepare_html_report(
             "-show-line-counts-or-regions",
             "-show-directory-coverage",
             "--show-branches=count",
-            "--show-instantiations",
             "--show-branch-summary",
             "-Xdemangler",
             "c++filt",
