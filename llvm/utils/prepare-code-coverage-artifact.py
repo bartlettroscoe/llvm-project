@@ -68,6 +68,9 @@ def prepare_html_report(
             report_dir,
             "-show-line-counts-or-regions",
             "-show-directory-coverage",
+            "--show-branches=count",
+            "--show-instantiations",
+            "--show-branch-summary",
             "-Xdemangler",
             "c++filt",
             "-Xdemangler",
@@ -78,11 +81,22 @@ def prepare_html_report(
     if compilation_dir:
         invocation += ["-compilation-dir=" + compilation_dir]
     subprocess.check_call(invocation)
-    with open(os.path.join(report_dir, "summary.txt"), "wb") as Summary:
+    with open(os.path.join(report_dir, "file_summary.txt"), "wb") as Summary:
         subprocess.check_call(
             [host_llvm_cov, "report"]
             + objects
             + ["-instr-profile", profile]
+            + ["--show-branch-summary", "--show-region-summary"]
+            + restricted_dirs,
+            stdout=Summary,
+        )
+    with open(os.path.join(report_dir, "function_summary.txt"), "wb") as Summary:
+        subprocess.check_call(
+            [host_llvm_cov, "report"]
+            + objects
+            + ["-instr-profile", profile]
+            + ["--show-functions", "--show-instantiation-summary", "--show-branch-summary",
+               "--show-region-summary", "-Xdemangler", "c++filt", "-Xdemangler", "-n"]
             + restricted_dirs,
             stdout=Summary,
         )
