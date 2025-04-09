@@ -89,16 +89,16 @@ def prepare_html_report(
             + restricted_dirs,
             stdout=Summary,
         )
-#    with open(os.path.join(report_dir, "function_summary.txt"), "wb") as Summary:
-#        subprocess.check_call(
-#            [host_llvm_cov, "report"]
-#            + objects
-#            + ["-instr-profile", profile]
-#            + ["--show-functions", "--show-instantiation-summary", "--show-branch-summary",
-#               "--show-region-summary", "-Xdemangler", "c++filt", "-Xdemangler", "-n"]
-#            + restricted_dirs,
-#            stdout=Summary,
-#        )
+    with open(os.path.join(report_dir, "function_summary.txt"), "wb") as Summary:
+        subprocess.check_call(
+            [host_llvm_cov, "report"]
+            + objects
+            + ["-instr-profile", profile]
+            + ["--show-functions", "--show-instantiation-summary", "--show-branch-summary",
+               "--show-region-summary", "-Xdemangler", "c++filt", "-Xdemangler", "-n"]
+            + restricted_dirs,
+            stdout=Summary,
+        )
     print("Done!")
 
 
