@@ -47,7 +47,7 @@ def merge_raw_profiles(host_llvm_profdata, profile_data_dir, preserve_profiles):
 
 def prepare_html_report(
     host_llvm_cov, profile, report_dir, binaries, restricted_dirs, compilation_dir
-):
+    ):
     print(":: Preparing html report for {0}...".format(binaries), end="")
     sys.stdout.flush()
     objects = []
@@ -81,6 +81,7 @@ def prepare_html_report(
         invocation += ["-compilation-dir=" + compilation_dir]
     subprocess.check_call(invocation)
     with open(os.path.join(report_dir, "file_summary.txt"), "wb") as Summary:
+        print("Generating file_summary.txt ...")
         subprocess.check_call(
             [host_llvm_cov, "report"]
             + objects
@@ -90,6 +91,7 @@ def prepare_html_report(
             stdout=Summary,
         )
     with open(os.path.join(report_dir, "function_summary.mangled.txt"), "wb") as Summary:
+        print("Generating function_summary.mangled.txt ...")
         subprocess.check_call(
             [host_llvm_cov, "report"]
             + objects
@@ -100,12 +102,24 @@ def prepare_html_report(
             stdout=Summary,
         )
     with open(os.path.join(report_dir, "function_summary.demangled.txt"), "wb") as Summary:
+        print("Generating function_summary.demangled.txt ...")
         subprocess.check_call(
             [host_llvm_cov, "report"]
             + objects
             + ["-instr-profile", profile]
             + ["--show-functions", "--show-instantiation-summary", "--show-branch-summary",
                "--show-region-summary", "-Xdemangler", "c++filt", "-Xdemangler", "-n"]
+            + restricted_dirs,
+            stdout=Summary,
+        )
+    with open(os.path.join(report_dir, "function_data.json"), "wb") as Summary:
+        print("Generating function_data.json ...")
+        subprocess.check_call(
+            [host_llvm_cov, "export"]
+            + objects
+            + ["-instr-profile", profile]
+            + ["--show-instantiation-summary", "--show-branch-summary",
+                 "--show-region-summary"]
             + restricted_dirs,
             stdout=Summary,
         )
@@ -120,7 +134,7 @@ def prepare_html_reports(
     unified_report,
     restricted_dirs,
     compilation_dir,
-):
+    ):
     if unified_report:
         prepare_html_report(
             host_llvm_cov,
